@@ -617,6 +617,22 @@ nanjizal_visionTriangle_Main.main = function() {
 			}
 		}
 	}
+	var color = 0;
+	if(color == null) {
+		color = 0;
+	}
+	var this1 = new haxe_io_Bytes(new ArrayBuffer(250000 + vision_ds_Image.OFFSET));
+	var this2 = this1;
+	this2.setInt32(0,250);
+	var i = 4;
+	while(i < this2.length) {
+		this2.b[i] = color >> 24 & 255;
+		this2.b[i + 1] = color >> 16 & 255;
+		this2.b[i + 2] = color >> 8 & 255;
+		this2.b[i + 3] = color & 255;
+		i += 4;
+	}
+	var imagePoly = this2;
 	var poly = [93.,195.,129.,92.,280.,81.,402.,134.,477.,70.,619.,61.,759.,97.,758.,247.,662.,347.,665.,230.,721.,140.,607.,117.,472.,171.,580.,178.,603.,257.,605.,377.,690.,404.,787.,328.,786.,480.,617.,510.,611.,439.,544.,400.,529.,291.,509.,218.,400.,358.,489.,402.,425.,479.,268.,464.,341.,338.,393.,427.,373.,284.,429.,197.,301.,150.,296.,245.,252.,384.,118.,360.,190.,272.,244.,165.,81.,259.,40.,216.];
 	var n = poly.length >> 1;
 	var tgs;
@@ -717,13 +733,13 @@ nanjizal_visionTriangle_Main.main = function() {
 		++_g;
 		i = tri_a * 2 | 0;
 		ax = poly[i] / 5;
-		ay = poly[i + 1] / 5 + 100;
+		ay = poly[i + 1] / 5 + 30;
 		i = tri_b * 2 | 0;
 		bx = poly[i] / 5;
-		by = poly[i + 1] / 5 + 100;
+		by = poly[i + 1] / 5 + 30;
 		i = tri_c * 2 | 0;
 		cx = poly[i] / 5;
-		cy = poly[i + 1] / 5 + 100;
+		cy = poly[i + 1] / 5 + 30;
 		var bx1 = bx;
 		var by1 = by;
 		var cx1 = cx;
@@ -769,22 +785,80 @@ nanjizal_visionTriangle_Main.main = function() {
 						break;
 					}
 				} else if(s + t < A) {
-					if(!(x >= 0 && y >= 0 && x < image.getInt32(0) && y < Math.ceil((image.length - vision_ds_Image.OFFSET) / (image.getInt32(0) * 4)))) {
+					if(!(x >= 0 && y >= 0 && x < imagePoly.getInt32(0) && y < Math.ceil((imagePoly.length - vision_ds_Image.OFFSET) / (imagePoly.getInt32(0) * 4)))) {
 						var this_x = x;
 						var this_y = y;
-						throw haxe_Exception.thrown(new vision_exceptions_OutOfBounds(image,new vision_ds_Point2D(this_x,this_y)));
+						throw haxe_Exception.thrown(new vision_exceptions_OutOfBounds(imagePoly,new vision_ds_Point2D(this_x,this_y)));
 					}
-					var position = (y * image.getInt32(0) + x) * 4;
+					var position = (y * imagePoly.getInt32(0) + x) * 4;
 					position += vision_ds_Image.OFFSET;
-					image.b[position] = 255;
-					image.b[position + 1] = 255;
-					image.b[position + 2] = 0;
-					image.b[position + 3] = 0;
+					imagePoly.b[position] = 204;
+					imagePoly.b[position + 1] = 255;
+					imagePoly.b[position + 2] = 0;
+					imagePoly.b[position + 3] = 0;
 					foundY = true;
 				} else if(foundY) {
 					break;
 				}
 			}
+		}
+	}
+	var transformFunc = nanjizal_visionTriangle_pixelplus_BlendAlpha_alphaBlend;
+	var p = 0;
+	var xx = p;
+	var q = 0;
+	var dx = 0 - p;
+	var dy = 0 - q;
+	var maxX = 240;
+	var maxY = 240;
+	var xPos;
+	var yPos;
+	while(true) {
+		xPos = p + dx;
+		yPos = q + dy;
+		if(!(xPos >= 0 && yPos >= 0 && xPos < image.getInt32(0) && yPos < Math.ceil((image.length - vision_ds_Image.OFFSET) / (image.getInt32(0) * 4)))) {
+			var this_x = xPos;
+			var this_y = yPos;
+			throw haxe_Exception.thrown(new vision_exceptions_OutOfBounds(image,new vision_ds_Point2D(this_x,this_y)));
+		}
+		var position = (yPos * image.getInt32(0) + xPos) * 4;
+		position += vision_ds_Image.OFFSET;
+		var value = image.b[position] << 24 | image.b[position + 1] << 16 | image.b[position + 2] << 8 | image.b[position + 3];
+		if(value == null) {
+			value = 0;
+		}
+		var this1 = value;
+		if(!(p >= 0 && q >= 0 && p < imagePoly.getInt32(0) && q < Math.ceil((imagePoly.length - vision_ds_Image.OFFSET) / (imagePoly.getInt32(0) * 4)))) {
+			var this_x1 = p;
+			var this_y1 = q;
+			throw haxe_Exception.thrown(new vision_exceptions_OutOfBounds(imagePoly,new vision_ds_Point2D(this_x1,this_y1)));
+		}
+		var position1 = (q * imagePoly.getInt32(0) + p) * 4;
+		position1 += vision_ds_Image.OFFSET;
+		var value1 = imagePoly.b[position1] << 24 | imagePoly.b[position1 + 1] << 16 | imagePoly.b[position1 + 2] << 8 | imagePoly.b[position1 + 3];
+		if(value1 == null) {
+			value1 = 0;
+		}
+		var this2 = value1;
+		var color = transformFunc(this1,this2);
+		if(!(xPos >= 0 && yPos >= 0 && xPos < image.getInt32(0) && yPos < Math.ceil((image.length - vision_ds_Image.OFFSET) / (image.getInt32(0) * 4)))) {
+			var this_x2 = xPos;
+			var this_y2 = yPos;
+			throw haxe_Exception.thrown(new vision_exceptions_OutOfBounds(image,new vision_ds_Point2D(this_x2,this_y2)));
+		}
+		var position2 = (yPos * image.getInt32(0) + xPos) * 4;
+		position2 += vision_ds_Image.OFFSET;
+		image.b[position2] = color >> 24 & 255;
+		image.b[position2 + 1] = color >> 16 & 255;
+		image.b[position2 + 2] = color >> 8 & 255;
+		image.b[position2 + 3] = color & 255;
+		++p;
+		if(p > maxX) {
+			p = xx;
+			++q;
+		}
+		if(q > maxY) {
+			break;
 		}
 	}
 	nanjizal_visionTriangle_Main.printImage(image);
@@ -861,6 +935,48 @@ var nanjizal_visionTriangle_iter_IntIterStart = function(min_,max_) {
 	this.max = max_;
 };
 nanjizal_visionTriangle_iter_IntIterStart.__name__ = true;
+function nanjizal_visionTriangle_pixelplus_BlendAlpha_alphaBlend(lhs,rhs) {
+	var color = lhs >> 24 & 255;
+	var a1 = color == 0 ? 0. : color / 255;
+	var color = lhs >> 16 & 255;
+	var r1 = color == 0 ? 0. : color / 255;
+	var color = lhs >> 8 & 255;
+	var g1 = color == 0 ? 0. : color / 255;
+	var color = lhs & 255;
+	var b1 = color == 0 ? 0. : color / 255;
+	var color = rhs >> 24 & 255;
+	var a2 = color == 0 ? 0. : color / 255;
+	var color = rhs >> 16 & 255;
+	var r2 = color == 0 ? 0. : color / 255;
+	var color = rhs >> 8 & 255;
+	var g2 = color == 0 ? 0. : color / 255;
+	var color = rhs & 255;
+	var b2 = color == 0 ? 0. : color / 255;
+	var a3 = a1 * (1 - a2);
+	var r = 255 * (r1 * a3 + r2 * a2) | 0;
+	var g = 255 * (g1 * a3 + g2 * a2) | 0;
+	var b = 255 * (b1 * a3 + b2 * a2) | 0;
+	var a = 255 * (a3 + a2) | 0;
+	var Alpha = a;
+	if(Alpha == null) {
+		Alpha = 255;
+	}
+	var this1 = 0;
+	var color = this1;
+	var Alpha1 = Alpha;
+	if(Alpha1 == null) {
+		Alpha1 = 255;
+	}
+	color &= -16711681;
+	color |= (r > 255 ? 255 : r < 0 ? 0 : r) << 16;
+	color &= -65281;
+	color |= (g > 255 ? 255 : g < 0 ? 0 : g) << 8;
+	color &= -256;
+	color |= b > 255 ? 255 : b < 0 ? 0 : b;
+	color &= 16777215;
+	color |= (Alpha1 > 255 ? 255 : Alpha1 < 0 ? 0 : Alpha1) << 24;
+	return color;
+}
 var vision_ds_Image = {};
 var vision_ds_Line2D = function(start,end) {
 	this.end = new vision_ds_Point2D(0,0);

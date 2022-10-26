@@ -28,6 +28,7 @@ import vision.ds.Color;
 
 import nanjizal.visionTriangle.iter.BoundIterators;
 import nanjizal.visionTriangle.iter.IteratorRange;
+import nanjizal.visionTriangle.pixelplus.ChannelHelp;
 
 inline function triangleFill( image: Image
                             , ax: Float, ay: Float
@@ -130,12 +131,6 @@ inline function triangleGradientFill( image: Image
       }
     }
   }
-}
-inline function boundChannel( f: Float ): Int {
-  var i = Std.int( f );
-  if( i > 0xFF ) i = 0xFF;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  if( i < 0 ) i = 0;
-  return i;
 }
 inline function dot( ax: Float, ay: Float, bx: Float, by: Float ): Float
   return ax * bx + ay * by;

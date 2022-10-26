@@ -9,14 +9,17 @@ import nanjizal.visionTriangle.shape.Circle;
 import nanjizal.visionTriangle.shape.Line;
 import nanjizal.visionTriangle.hxPolyK.PolyK;
 import nanjizal.visionTriangle.shape.Triangle;
+import nanjizal.visionTriangle.pixelplus.BlendAlpha;
+import nanjizal.visionTriangle.pixelplus.ColorMask;
 
 class Main {
     static function main() {
         
-        var image = new Image(250, 250, 0x000000);
+        var image = new Image(250, 250, 0x00000000);
         //ellipseFillRadialGradient( image, 130, 50, 30, 40, Color.RED, Color.YELLOW );
         quadrantGradientFill( image, 130, 50, 30, 40, -Math.PI/2, Color.RED, Color.YELLOW );
         lineGradientFill( image, 50, 20, 90, 90, 50, Color.RED, Color.GREEN, Color.YELLOW, Color.BLUE );
+        var imagePoly = new Image(250, 250, 0x00000000);
         var poly = [ 93., 195., 129., 92., 280., 81., 402., 134., 477., 70., 619., 61., 759., 97., 758., 247., 662., 347., 665., 230., 721., 140., 607., 117., 472., 171., 580., 178., 603., 257., 605., 377., 690., 404., 787., 328., 786., 480., 617., 510., 611., 439., 544., 400., 529., 291., 509., 218., 400., 358., 489., 402., 425., 479., 268., 464., 341., 338., 393., 427., 373., 284., 429., 197., 301., 150., 296., 245., 252., 384., 118., 360., 190., 272., 244., 165., 81., 259., 40., 216.];
         var tgs = PolyK.triangulate( poly ); 
         var triples = new ArrayTriple( tgs );
@@ -30,16 +33,17 @@ class Main {
         for( tri in triples ){
             i = Std.int( tri.a*2 );
             ax = poly[ i ]/5;
-            ay = poly[ i + 1 ]/5 + 100;
+            ay = poly[ i + 1 ]/5 + 30;
             i = Std.int( tri.b*2 );
             bx = poly[ i ]/5;
-            by = poly[ i + 1 ]/5 + 100;
-            i = Std.int( tri.c*2 );
+            by = poly[ i + 1 ]/5 + 30;
+            i = Std.int( tri.c*2 );	
             cx = poly[ i ]/5;
-            cy = poly[ i + 1 ]/5 + 100;
-            triangleFill( image, ax, ay, bx, by, cx, cy, 0xFFFF0000 );
+            cy = poly[ i + 1 ]/5 + 30;
+            triangleFill( imagePoly, ax, ay, bx, by, cx, cy, 0xccFF0000 );
         }
-
+        alphaBlendImage( image, imagePoly, 0, 0, 0, 0, 240, 240 );
+		
 /*
         image.drawLine(12, 53, 54, 15, 0xbd0202);
 		image.drawLine(56, 248, 181, 95, 0x000355);
